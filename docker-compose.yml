@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  bind:
+    image: internetsystemsconsortium/bind9:9.18
+    container_name: bind9
+    volumes:
+      - ./bind/named.conf:/etc/bind/named.conf
+      - ./bind/zones:/etc/bind/zones
+    expose:
+      - "53"      # Porta DNS
+      - "53/udp"  # Porta DNS UDP
+    restart: unless-stopped
+    networks:
+      bind_network:
+        ipv4_address: 192.168.42.2  # IP fixo para o container
+
+networks:
+  bind_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.42.0/24"  # Faixa de IPs para a rede

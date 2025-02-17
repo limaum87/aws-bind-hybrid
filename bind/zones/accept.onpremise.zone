@@ -1,0 +1,12 @@
+$TTL 86400
+@    IN    SOA   ns1.accept.onpremise. root.accept.onpremise. (
+             2023101801 ; Serial
+             3600       ; Refresh
+             1800       ; Retry
+             1209600    ; Expire
+             86400 )    ; Minimum TTL
+
+     IN NS   ns1.accept.onpremise.
+
+ns1  IN A    192.168.1.1
+www  IN A    192.168.1.100
