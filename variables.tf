@@ -89,3 +89,7 @@ variable "destination_cidr_block"{
   description = "CIDR on prem"
   type        = string
 }
+variable "onprem_dns_ip"{
+  description = "DNS on prem"
+  type        = string
+}

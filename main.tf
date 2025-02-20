@@ -136,3 +136,35 @@ module "route53" {
   zone_name = "accept.cloud"        # Nome da zona
   vpc_id    = module.vpc.vpc_id      # ID da VPC criada no módulo VPC
 }
+
+# Criando o Resolver Endpoint para encaminhar as consultas para a rede on-premise
+resource "aws_route53_resolver_endpoint" "resolver_endpoint" {
+  direction             = "OUTBOUND"  # Enviar as requisições DNS para a rede on-premise
+  security_group_ids    = [module.security_group.security_group_id]
+
+  ip_address {
+    subnet_id = module.vpc.public_subnet_id  # IPs públicos para o resolver
+  }
+
+  ip_address {
+    subnet_id = module.vpc.private_subnet_id  # IPs privados para o resolver
+  }
+
+  tags = {
+    Name = "AWSResolverEndpoint"
+  }
+}
+
+# Regra de DNS para encaminhar consultas da AWS para a rede on-premise
+resource "aws_route53_resolver_rule" "aws_to_onprem" {
+  domain_name           = "accept.onpremise"  # Domínio da rede on-premise
+  rule_type             = "FORWARD"  # Define o tipo de regra como "FORWARD"
+  target_ip {
+    ip = var.onprem_dns_ip  # IP do DNS da rede on-premise
+  }
+  resolver_endpoint_id   = aws_route53_resolver_endpoint.resolver_endpoint.id
+  name                   = "forward-to-onprem"
+  tags = {
+    Name = "AWSDNSForwarderToOnPrem"
+  }
+}
